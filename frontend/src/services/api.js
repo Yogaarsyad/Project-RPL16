@@ -21,6 +21,8 @@ export const updateProfile = (profileData) => API.put('/users/profile', profileD
 // Fungsi untuk Food Log
 export const addFoodLog = (logData) => API.post('/food-logs', logData);
 export const getFoodLogs = () => API.get('/food-logs');
+// Cari kalori berdasarkan nama makanan (backend akan memanggil OpenFoodFacts)
+export const checkCalories = (name) => API.post('/food-logs/calories', { name });
 
 // Fungsi untuk Sleep Log
 export const addSleepLog = (logData) => API.post('/sleep-logs', logData);
