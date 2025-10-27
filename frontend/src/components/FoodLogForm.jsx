@@ -19,16 +19,16 @@ function FoodLogForm({ onAddLog }) {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <h3 className="text-lg font-semibold mb-4 text-gray-800">Catat Makanan Baru</h3>
+      <h3 className="text-lg font-semibold mb-4 text-gray-800">Log New Food</h3>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Nama Makanan</label>
+          <label className="block text-sm font-medium text-gray-700">Food Name</label>
           <div className="mt-1 flex">
             <input
               type="text"
               value={foodName}
               onChange={(e) => setFoodName(e.target.value)}
-              placeholder="Contoh: Nasi Goreng"
+              placeholder="e.g., Fried Rice"
               required
               className="block w-full px-3 py-2 border border-gray-300 rounded-l-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
@@ -55,23 +55,23 @@ function FoodLogForm({ onAddLog }) {
               }}
               className="ml-2 inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-50 text-sm font-medium text-gray-700 rounded-r-md hover:bg-gray-100"
             >
-              {checking ? 'Mencari...' : 'Check calories'}
+              {checking ? 'Searching...' : 'Check calories'}
             </button>
           </div>
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Jumlah Kalori (kkal)</label>
+          <label className="block text-sm font-medium text-gray-700">Calories (kcal)</label>
           <input
             type="number"
             value={calories}
             onChange={(e) => setCalories(e.target.value)}
-            placeholder="Contoh: 450"
+            placeholder="e.g., 450"
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Tanggal</label>
+          <label className="block text-sm font-medium text-gray-700">Date</label>
           <input
             type="date"
             value={date}
@@ -84,7 +84,7 @@ function FoodLogForm({ onAddLog }) {
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors"
         >
-          Tambah Catatan
+          Add Log
         </button>
       </form>
       {/* AI result area */}

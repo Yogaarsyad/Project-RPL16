@@ -14,7 +14,7 @@ function DashboardPage() {
       const { data } = await getFoodLogs();
       setLogs(data);
     } catch (error) {
-      console.error('Gagal mengambil data log', error);
+      console.error('Failed to fetch food logs', error);
       if (error.response?.status === 401) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -29,7 +29,7 @@ function DashboardPage() {
     const { data } = await getSleepLogs();
     setSleepLogs(data);
   } catch (error) {
-    console.error('Gagal mengambil data sleep log', error);
+    console.error('Failed to fetch sleep logs', error);
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
@@ -48,8 +48,8 @@ function DashboardPage() {
       await addFoodLog(logData);
       fetchLogs();
     } catch (error) {
-      console.error('Gagal menambah log makanan', error);
-      alert('Gagal menambah log makanan');
+      console.error('Failed to add food log', error);
+      alert('Failed to add food log');
     }
   };
 
@@ -59,15 +59,15 @@ function DashboardPage() {
     await addSleepLog(logData);
     fetchSleepLogs();
   } catch (error) {
-    console.error('Gagal menambah sleep log', error);
-    alert('Gagal menambah sleep log');
+    console.error('Failed to add sleep log', error);
+    alert('Failed to add sleep log');
   }
 };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-300 to-blue-500 py-10 px-2">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Kolom 1: Form input */}
+        {/* Column 1: Input Forms */}
         <div className="lg:col-span-1 space-y-6">
           <div className="bg-white rounded-2xl shadow-xl border-t-4 border-blue-400 p-6">
             <FoodLogForm onAddLog={handleAddFoodLog} />
@@ -78,9 +78,9 @@ function DashboardPage() {
           </div>
         </div>
 
-        {/* Kolom 2: Daftar Riwayat Makanan */}
+        {/* Column 2: Log Lists */}
         <div className="lg:col-span-2 bg-white p-8 rounded-2xl shadow-xl border-t-4 border-blue-400">
-          <h3 className="text-2xl font-bold mb-6 text-blue-700 text-center drop-shadow">Riwayat Makanan</h3>
+          <h3 className="text-2xl font-bold mb-6 text-blue-700 text-center drop-shadow">Food History</h3>
           <div className="h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
             <ul className="space-y-4">
               {logs.length > 0 ? (
@@ -92,7 +92,7 @@ function DashboardPage() {
                     <div>
                       <p className="font-semibold text-blue-900">{log.nama_makanan}</p>
                       <p className="text-xs text-blue-600">
-                        {new Date(log.tanggal).toLocaleDateString('id-ID', {
+                        {new Date(log.tanggal).toLocaleDateString('en-US', { // Changed to en-US
                           weekday: 'long',
                           year: 'numeric',
                           month: 'long',
@@ -101,17 +101,17 @@ function DashboardPage() {
                       </p>
                     </div>
                     <span className="font-bold text-blue-700 bg-blue-100 px-3 py-1 rounded-full shadow">
-                      {log.kalori} kkal
+                      {log.kalori} kcal
                     </span>
                   </li>
                 ))
               ) : (
-                <p className="text-blue-600 text-center mt-4">Belum ada data makanan.</p>
+                <p className="text-blue-600 text-center mt-4">No food data yet.</p>
               )}
             </ul>
           </div>
           {/* Sleep logs list */}
-          <h3 className="text-2xl font-bold mt-10 mb-6 text-blue-700 text-center drop-shadow">Riwayat Tidur</h3>
+          <h3 className="text-2xl font-bold mt-10 mb-6 text-blue-700 text-center drop-shadow">Sleep History</h3>
           <div className="h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
             <ul className="space-y-4">
               {sleepLogs.length > 0 ? (
@@ -123,26 +123,26 @@ function DashboardPage() {
                     <div>
                       <p className="font-semibold text-blue-900">
                         {log.waktu_tidur && log.waktu_bangun
-                          ? `${getSleepDuration(log.waktu_tidur, log.waktu_bangun)} jam tidur`
-                          : 'Durasi tidak tersedia'}
+                          ? `${getSleepDuration(log.waktu_tidur, log.waktu_bangun)} hours of sleep`
+                          : 'Duration unavailable'}
                       </p>
                       <p className="text-xs text-blue-600">
                         {/* Use log.tanggal for the date */}
                         {log.tanggal
-                          ? new Date(log.tanggal).toLocaleDateString('id-ID', {
+                          ? new Date(log.tanggal).toLocaleDateString('en-US', { // Changed to en-US
                               weekday: 'long',
                               year: 'numeric',
                               month: 'long',
                               day: 'numeric'
                             })
-                          : 'Tanggal tidak tersedia'}
+                          : 'Date unavailable'}
                       </p>
                       {log.kualitas_tidur && <p className="text-xs text-blue-500">{log.kualitas_tidur}</p>}
                     </div>
                   </li>
                 ))
               ) : (
-                <p className="text-blue-600 text-center mt-4">Belum ada data tidur.</p>
+                <p className="text-blue-600 text-center mt-4">No sleep data yet.</p>
               )}
             </ul>
           </div>
@@ -156,7 +156,7 @@ function DashboardPage() {
 function getSleepDuration(start, end) {
   const startDate = new Date(start);
   const endDate = new Date(end);
-  if (isNaN(startDate) || isNaN(endDate)) return 'Durasi tidak valid';
+  if (isNaN(startDate) || isNaN(endDate)) return 'Invalid duration';
   const diffMs = endDate - startDate;
   const diffHours = diffMs / (1000 * 60 * 60);
   return diffHours.toFixed(2);

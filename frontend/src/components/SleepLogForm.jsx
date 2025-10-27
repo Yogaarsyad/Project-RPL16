@@ -25,9 +25,9 @@ function SleepLogForm({ onAddLog }) {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow mb-4">
-      <h2 className="text-lg font-bold mb-2">Catat Tidur Baru</h2>
+      <h2 className="text-lg font-bold mb-2">New Sleep Record</h2>
       <div className="mb-2">
-        <label className="block mb-1">Tanggal</label>
+        <label className="block mb-1">Date</label>
         <input
           type="date"
           value={tanggal}
@@ -37,7 +37,7 @@ function SleepLogForm({ onAddLog }) {
         />
       </div>
       <div className="mb-2">
-        <label className="block mb-1">Waktu Tidur</label>
+        <label className="block mb-1">Sleep Time</label>
         <input
           type="datetime-local"
           value={waktuTidur}
@@ -47,7 +47,7 @@ function SleepLogForm({ onAddLog }) {
         />
       </div>
       <div className="mb-2">
-        <label className="block mb-1">Waktu Bangun</label>
+        <label className="block mb-1">Wake Up Time</label>
         <input
           type="datetime-local"
           value={waktuBangun}
@@ -57,13 +57,13 @@ function SleepLogForm({ onAddLog }) {
         />
       </div>
       <div className="mb-2">
-        <label className="block mb-1">Kualitas Tidur</label>
+        <label className="block mb-1">Sleep Quality</label>
         <input
           type="text"
           value={kualitasTidur}
           onChange={e => setKualitasTidur(e.target.value)}
           className="border p-2 rounded w-full"
-          placeholder="Contoh: Baik, Buruk, Sedang"
+          placeholder="e.g., Good, Bad, Average"
         />
       </div>
       <button
@@ -71,7 +71,7 @@ function SleepLogForm({ onAddLog }) {
         className="bg-blue-500 text-white px-4 py-2 rounded"
         disabled={loading}
       >
-        {loading ? 'Saving...' : 'Tambah Catatan Tidur'}
+        {loading ? 'Saving...' : 'Add Sleep Record'}
       </button>
     </form>
   );
