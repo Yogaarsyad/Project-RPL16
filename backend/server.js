@@ -21,6 +21,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/food-logs', foodLogRoutes);
 app.use('/api/sleep-logs', sleepLogRoutes);
 app.use('/api/exercise-logs', exerciseLogRoutes);
+
+
 app.use('/api/laporan', reportRoutes); // Sekarang reportRoutes sudah didefinisikan
 
 // Endpoint dasar

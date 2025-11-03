@@ -1,22 +1,26 @@
 // backend/src/controllers/exerciseLogController.js
+const model = require('../models/exerciseLogModel');
 
-const exerciseLogModel = require('../models/exerciseLogModel');
-
-// Fungsi untuk menambah log baru
 exports.addLog = async (req, res) => {
     try {
-        // req.user.id diambil dari token setelah melewati middleware 'protect'
-        const newLog = await exerciseLogModel.create(req.user.id, req.body);
+        // Panggil nama fungsi yang baru: createExerciseLog
+        const newLog = await model.createExerciseLog(
+            req.user.id, 
+            req.body.nama_olahraga, 
+            req.body.durasi_menit, 
+            req.body.kalori_terbakar, 
+            req.body.tanggal
+        );
         res.status(201).json(newLog);
     } catch (error) {
         res.status(500).json({ message: 'Gagal menambahkan log olahraga', error: error.message });
     }
 };
 
-// Fungsi untuk mengambil semua log milik satu user
 exports.getLogs = async (req, res) => {
     try {
-        const logs = await exerciseLogModel.getByUserId(req.user.id);
+        // Panggil nama fungsi yang baru: getExerciseLogsByUserId
+        const logs = await model.getExerciseLogsByUserId(req.user.id);
         res.json(logs);
     } catch (error) {
         res.status(500).json({ message: 'Gagal mengambil log olahraga', error: error.message });

@@ -1,3 +1,4 @@
+// frontend/src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
@@ -6,10 +7,9 @@ import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
-import LaporanPage from './pages/ReportPage'; // Tambah import
-import DashboardLayout from './components/DashboardLayout'; // Import Layout
+import LaporanPage from './pages/ReportPage';
+import DashboardLayout from './components/DashboardLayout'; 
 
-// Komponen wrapper untuk route yang dilindungi
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -18,7 +18,6 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-// Layout khusus untuk Dashboard yang menangani logout
 const DashboardLayoutWithLogout = () => {
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -38,7 +37,6 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           
-          {/* Rute Induk untuk Dashboard */}
           <Route 
             path="/dashboard" 
             element={
@@ -47,14 +45,10 @@ function App() {
               </ProtectedRoute>
             }
           >
-            {/* Rute Anak: halaman default dashboard */}
             <Route index element={<DashboardPage />} />
-            {/* Rute Anak: halaman profil */}
             <Route path="profile" element={<ProfilePage />} />
-            {/* Tambah Rute Anak: halaman laporan */}
-            <Route path="laporan" element={<LaporanPage />} />
+            <Route path="laporan" element={<LaporanPage />} /> 
           </Route>
-
         </Routes>
       </div>
     </Router>
