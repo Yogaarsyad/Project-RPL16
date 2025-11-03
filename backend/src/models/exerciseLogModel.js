@@ -8,11 +8,13 @@ const db = require('../config/db');
  * @param {object} logData Data log olahraga { nama_olahraga, durasi_menit, kalori_terbakar, tanggal }.
  * @returns {Promise<object>} Catatan log yang baru dibuat.
  */
-const create = async (userId, { nama_olahraga, durasi_menit, kalori_terbakar, tanggal }) => {
+const create = async (userId, { nama_olahraga, jenis_olahraga, durasi_menit, kalori_terbakar, tanggal }) => {
+    // Accept either `nama_olahraga` or `jenis_olahraga` from caller, but INSERT into DB column `jenis_olahraga`
+    const sportName = nama_olahraga || jenis_olahraga || null;
     // Query SQL untuk memasukkan data baru ke tabel exercise_logs
     const result = await db.query(
-        'INSERT INTO exercise_logs (user_id, nama_olahraga, durasi_menit, kalori_terbakar, tanggal) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-        [userId, nama_olahraga, durasi_menit, kalori_terbakar, tanggal || new Date()]
+        'INSERT INTO exercise_logs (user_id, jenis_olahraga, durasi_menit, kalori_terbakar, tanggal) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [userId, sportName, durasi_menit, kalori_terbakar, tanggal || new Date()]
     );
     return result.rows[0];
 };
