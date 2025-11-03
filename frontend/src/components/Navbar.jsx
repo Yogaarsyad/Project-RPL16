@@ -1,21 +1,36 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Navbar() {
+  const navigate = useNavigate();
+
   return (
-    <nav className="fixed top-0 left-0 w-full bg-transparent text-white p-6 z-50">
-      <div className="container mx-auto flex justify-between items-center">
-        {/* Logo */}
-        <Link to="/" className="text-2xl font-bold">
-          LifeMon
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-transparent text-white">
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        {/* Logo + Diamond Animated */}
+        <Link to="/" className="flex items-center">
+          <svg
+            className="diamond w-8 h-8 mr-3"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+            role="img"
+          >
+            <title>LifeMon</title>
+            <path d="M12 2 L19 9 L12 22 L5 9 Z" />
+          </svg>
+
+          <span className="text-2xl font-bold select-none">LifeMon</span>
         </Link>
 
-        {/* Tombol Login */}
-        <Link to="/login">
-          <button className="bg-white text-primary font-semibold py-2 px-6 rounded-lg hover:bg-gray-200 transition-colors">
-            Login
-          </button>
-        </Link>
+        {/* Tombol Login / Profil */}
+        <div className="flex items-center space-x-3">
+          <Link to="/login">
+            <button className="px-4 py-2 rounded-md bg-white text-primary font-semibold text-sm">
+              Login
+            </button>
+          </Link>
+        </div>
       </div>
     </nav>
   );

@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
+import LaporanPage from './pages/ReportPage'; // Tambah import
 import DashboardLayout from './components/DashboardLayout'; // Import Layout
 
 // Komponen wrapper untuk route yang dilindungi
@@ -50,6 +51,8 @@ function App() {
             <Route index element={<DashboardPage />} />
             {/* Rute Anak: halaman profil */}
             <Route path="profile" element={<ProfilePage />} />
+            {/* Tambah Rute Anak: halaman laporan */}
+            <Route path="laporan" element={<LaporanPage />} />
           </Route>
 
         </Routes>

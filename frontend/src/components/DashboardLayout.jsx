@@ -14,7 +14,7 @@ function DashboardLayout({ onLogout }) {
           isSidebarOpen ? 'w-64' : 'w-0'
         } overflow-hidden`}
       >
-        {/* Bagian atas sidebar dengan judul aplikasi */}
+        {/* ... (Judul LifeMon tetap sama) ... */}
         <div className="p-4 border-b border-gray-700 flex justify-between items-center">
           <h1 className={`font-bold text-xl whitespace-nowrap ${!isSidebarOpen && 'hidden'}`}>
             LifeMon
@@ -27,17 +27,21 @@ function DashboardLayout({ onLogout }) {
             <FiHome className="mr-3 flex-shrink-0" />
             <span className={!isSidebarOpen && 'hidden'}>Dashboard</span>
           </Link>
-          <a href="#" className="flex items-center p-2 rounded-md hover:bg-gray-700 whitespace-nowrap">
+          
+          {/* ▼▼▼ PERBAIKI DI SINI ▼▼▼ */}
+          <Link to="/dashboard/laporan" className="flex items-center p-2 rounded-md hover:bg-gray-700 whitespace-nowrap">
             <FiBarChart2 className="mr-3 flex-shrink-0" />
-            <span className={!isSidebarOpen && 'hidden'}>Laporan</span>
-          </a>
+            <span className={!isSidebarOpen && 'hidden'}>Report</span>
+          </Link>
+          {/* ▲▲▲ SELESAI PERBAIKAN ▲▲▲ */}
+
           <Link to="/dashboard/profile" className="flex items-center p-2 rounded-md hover:bg-gray-700 whitespace-nowrap">
             <FiUser className="mr-3 flex-shrink-0" />
             <span className={!isSidebarOpen && 'hidden'}>Profil</span>
           </Link>
         </nav>
         
-        {/* Bagian bawah sidebar dengan tombol Logout */}
+        {/* ... (Tombol Logout tetap sama) ... */}
         <div className="p-4 border-t border-gray-700">
           <button onClick={onLogout} className="flex items-center w-full p-2 rounded-md hover:bg-red-500 whitespace-nowrap">
             <FiLogOut className="mr-3 flex-shrink-0" />
@@ -46,7 +50,7 @@ function DashboardLayout({ onLogout }) {
         </div>
       </aside>
 
-      {/* Bagian Konten Utama */}
+      {/* ... (Header dan Main Content tetap sama) ... */}
       <div className="flex-1 flex flex-col">
         <header className="bg-white shadow-md p-4 flex items-center">
           <button onClick={() => setSidebarOpen(!isSidebarOpen)} className="text-gray-600 text-2xl">

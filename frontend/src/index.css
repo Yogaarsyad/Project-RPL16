@@ -107,3 +107,39 @@ html, body, #root {
 .animate-fade-in-up {
   animation: fadeInUp 0.5s ease-out forwards;
 }
+
+/* --- Animasi berlian untuk Navbar --- */
+.diamond {
+  fill: #ffd700; /* warna awal emas */
+  transform-origin: center;
+  transition: transform .2s ease, filter .2s ease;
+  animation: diamondGlow 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(255,215,0,0.8));
+}
+
+.diamond:hover {
+  transform: scale(1.08) rotate(6deg);
+}
+
+@keyframes diamondGlow {
+  0% {
+    fill: #ffd700;
+    filter: drop-shadow(0 0 6px rgba(255,215,0,0.8));
+    transform: rotate(0deg) scale(1);
+  }
+  35% {
+    fill: #00e5ff;
+    filter: drop-shadow(0 0 14px rgba(0,229,255,0.9));
+    transform: rotate(10deg) scale(1.05);
+  }
+  70% {
+    fill: #ff6ec7;
+    filter: drop-shadow(0 0 10px rgba(255,110,199,0.9));
+    transform: rotate(-6deg) scale(1.02);
+  }
+  100% {
+    fill: #ffd700;
+    filter: drop-shadow(0 0 6px rgba(255,215,0,0.8));
+    transform: rotate(0deg) scale(1);
+  }
+}
