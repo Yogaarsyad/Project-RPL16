@@ -1,14 +1,10 @@
+const express = require('express');
+const router = express.Router();
+const foodLogController = require('../controllers/foodLogController');
+const { protect } = require('../middleware/authMiddleware'); // GUNAKAN { protect }
 
-    const express = require('express');
-    const router = express.Router();
-    const foodLogController = require('../controllers/foodLogController');
-    const { protect } = require('../middleware/authMiddleware');
+router.post('/', protect, foodLogController.addFoodLog);
+router.get('/', protect, foodLogController.getFoodLogs);
+router.post('/calories', protect, foodLogController.getCalories);
 
-
-    router.post('/', protect, foodLogController.addFoodLog);
-    router.get('/', protect, foodLogController.getFoodLogs);
-
-    // Cari kalori dari nama makanan (menggunakan OpenFoodFacts)
-    router.post('/calories', protect, foodLogController.getCalories);
-
-    module.exports = router;
+module.exports = router;

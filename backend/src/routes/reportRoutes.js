@@ -6,5 +6,6 @@ const { protect } = require('../middleware/authMiddleware');
 // Mendapatkan data laporan kesehatan untuk pengguna yang diautentikasi.
 router.get('/data', protect, reportController.getReportData);
 router.get('/statistics', protect, reportController.getStatistics);
+router.get('/exercise-trend', protect, reportController.getExerciseTrend); // TAMBAHAN BARU
 
 module.exports = router;

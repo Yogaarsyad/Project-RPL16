@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const sleepLogController = require('../controllers/sleepLogController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect } = require('../middleware/authMiddleware'); // GUNAKAN { protect }
 
-// Menambahkan log tidur baru untuk pengguna yang diautentikasi.
 router.post('/', protect, sleepLogController.addSleepLog);
 router.get('/', protect, sleepLogController.getSleepLogs);
 

@@ -4,7 +4,6 @@ const userController = require('../controllers/userController');
 const profileController = require('../controllers/userProfileController');
 const { protect } = require('../middleware/authMiddleware');
 
-// Rute untuk pendaftaran, login, dan manajemen profil pengguna.
 router.post('/register', userController.register);
 router.post('/login', userController.login);
 router.get('/profile', protect, profileController.getProfile);

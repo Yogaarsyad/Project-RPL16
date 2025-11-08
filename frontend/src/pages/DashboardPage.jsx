@@ -82,15 +82,25 @@ function DashboardPage() {
     }
   };
 
-  const handleAddExerciseLog = async (logData) => {
-    try {
-      await addExerciseLog(logData);
-      fetchExerciseLogs();
-    } catch (error) {
-      console.error('Failed to add exercise log', error);
-      alert('Failed to add exercise log');
-    }
-  };
+const handleAddExerciseLog = async (logData) => {
+  try {
+    console.log('🔄 Adding exercise log:', logData);
+    await addExerciseLog(logData);
+    fetchExerciseLogs();
+  } catch (error) {
+    console.error('❌ Failed to add exercise log:', error);
+    
+    // Tampilkan error detail ke user
+    const errorMessage = error.response?.data?.message || 
+                        error.response?.data?.error || 
+                        error.message || 
+                        'Unknown error';
+    
+    alert(`Failed to add exercise log: ${errorMessage}`);
+  }
+};
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-300 to-blue-500 py-10 px-2">

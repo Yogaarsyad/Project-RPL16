@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 const API = axios.create({ baseURL: 'http://localhost:5000/api' });
@@ -25,9 +24,9 @@ export const deleteFoodLog = (logId) => API.delete(`/food-logs/${logId}`);
 export const checkCalories = (name) => API.post('/food-logs/calories', { name });
 
 // --- Exercise Log ---
-export const addExerciseLog = (logData) => API.post('/exercise-logs', logData);
+// PERBAIKAN: Hapus duplikasi dan gunakan API yang konsisten
 export const getExerciseLogs = () => API.get('/exercise-logs');
-export const deleteExerciseLog = (logId) => API.delete(`/exercise-logs/${logId}`);
+export const addExerciseLog = (logData) => API.post('/exercise-logs', logData);
 
 // --- Sleep Log ---
 export const addSleepLog = (logData) => API.post('/sleep-logs', logData);
@@ -38,3 +37,4 @@ export const deleteSleepLog = (logId) => API.delete(`/sleep-logs/${logId}`);
 export const getReportData = () => API.get('/laporan/data'); 
 export const getStatistics = () => API.get('/laporan/statistics');
 export const getRecommendations = () => API.get('/recommendations');
+export const getExerciseTrend = () => API.get('/laporan/exercise-trend');
