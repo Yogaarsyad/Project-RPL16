@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+// Form untuk menambahkan catatan tidur baru.
 function SleepLogForm({ onAddLog }) {
   const [tanggal, setTanggal] = useState('');
   const [waktuTidur, setWaktuTidur] = useState('');

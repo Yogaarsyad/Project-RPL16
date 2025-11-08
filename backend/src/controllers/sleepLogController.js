@@ -1,5 +1,6 @@
 const sleepLogModel = require('../models/sleepLogModel');
 
+// Controller untuk menambahkan dan mendapatkan log tidur.
 exports.addSleepLog = async (req, res) => {
   const { tanggal, waktu_tidur, waktu_bangun, kualitas_tidur } = req.body;
   const userId = req.user.id;

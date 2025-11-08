@@ -1,8 +1,9 @@
-// frontend/src/services/api.js
+
 import axios from 'axios';
 
 const API = axios.create({ baseURL: 'http://localhost:5000/api' });
 
+// Menyisipkan token otentikasi ke setiap permintaan API.
 API.interceptors.request.use((req) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -34,6 +35,6 @@ export const getSleepLogs = () => API.get('/sleep-logs');
 export const deleteSleepLog = (logId) => API.delete(`/sleep-logs/${logId}`);
 
 // --- Report & Recommendation ---
-export const getReportData = () => API.get('/laporan/data'); // <-- Ini yang dipakai
+export const getReportData = () => API.get('/laporan/data'); 
 export const getStatistics = () => API.get('/laporan/statistics');
 export const getRecommendations = () => API.get('/recommendations');

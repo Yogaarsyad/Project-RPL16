@@ -10,7 +10,7 @@ function FoodLogForm({ onAddLog }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Send correct field names to backend
+    // send keys that backend model expects (nama_makanan, kalori, tanggal).
     onAddLog({ nama_makanan: foodName, kalori: parseInt(calories), tanggal: date });
     setFoodName('');
     setCalories('');

@@ -8,6 +8,7 @@ function ExerciseLogForm({ onAddLog }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     // send keys that backend model expects (nama_olahraga, durasi_menit, kalori_terbakar)
     onAddLog({ nama_olahraga: activityName, durasi_menit: parseInt(duration), kalori_terbakar: parseInt(caloriesBurned), tanggal: date });
     setActivityName(''); setDuration(''); setCaloriesBurned(''); setDate('');

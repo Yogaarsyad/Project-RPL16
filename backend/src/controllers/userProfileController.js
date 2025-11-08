@@ -10,7 +10,7 @@ exports.getProfile = async (req, res) => {
     }
 };
 
-// Fungsi untuk MENGUPDATE data profil
+// Fungsi untuk MEMPERBARUI data profil pengguna. 
 exports.updateProfile = async (req, res) => {
     try {
         const updatedProfile = await userProfileModel.updateProfileByUserId(req.user.id, req.body);

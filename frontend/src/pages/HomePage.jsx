@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import HeroBackground from '../assets/hero-background.jpg'; // Pastikan Anda punya gambar ini
 
+// Halaman Beranda.
 function HomePage() {
   return (
     <div className="relative min-h-screen font-sans">

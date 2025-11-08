@@ -23,7 +23,7 @@ app.use('/api/sleep-logs', sleepLogRoutes);
 app.use('/api/exercise-logs', exerciseLogRoutes);
 
 
-app.use('/api/laporan', reportRoutes); // Sekarang reportRoutes sudah didefinisikan
+app.use('/api/laporan', reportRoutes); 
 
 // Endpoint dasar
 app.get('/', (req, res) => {

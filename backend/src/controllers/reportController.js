@@ -1,9 +1,8 @@
-// backend/src/controllers/reportController.js
 const foodLogModel = require('../models/foodLogModel');
 const sleepLogModel = require('../models/sleepLogModel');
 const exerciseLogModel = require('../models/exerciseLogModel');
 
-// Controller untuk mendapatkan data laporan
+// Controller untuk mendapatkan data laporan gabungan.
 exports.getReportData = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -11,7 +10,7 @@ exports.getReportData = async (req, res) => {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     
-    // Pemanggilan ini sekarang akan berhasil karena nama fungsinya sudah cocok
+    // Mengambil semua data log dalam satu panggilan.
     const [foodLogs, sleepLogs, exerciseLogs] = await Promise.all([
       foodLogModel.getFoodLogsByUserId(userId),
       sleepLogModel.getSleepLogsByUserId(userId),

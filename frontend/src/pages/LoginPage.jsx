@@ -11,7 +11,7 @@ function LoginPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Ini adalah satu-satunya definisi handleSubmit yang benar, berada di dalam komponen.
+  // Handle form submission for login.
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -74,7 +74,5 @@ function LoginPage() {
     </div>
   );
 }
-
-// Blok handleSubmit yang salah di bagian bawah sudah dihapus.
 
 export default LoginPage;

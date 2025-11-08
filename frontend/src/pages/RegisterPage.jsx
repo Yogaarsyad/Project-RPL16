@@ -1,9 +1,7 @@
-// src/pages/RegisterPage.jsx
-
 import React, { useState } from 'react';
 import { register } from '../services/api';
 import { useNavigate, Link } from 'react-router-dom';
-import { FiUser, FiMail, FiLock } from 'react-icons/fi'; // Impor ikon User
+import { FiUser, FiMail, FiLock } from 'react-icons/fi'; 
 
 function RegisterPage() {
   const [formData, setFormData] = useState({ nama: '', email: '', password: '' });

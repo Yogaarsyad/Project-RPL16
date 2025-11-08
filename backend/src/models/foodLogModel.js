@@ -1,6 +1,6 @@
-// src/models/foodLogModel.js
 const db = require('../config/db');
 
+// Membuat log makanan baru.  
 const createFoodLog = async (userId, nama_makanan, kalori, tanggal) => {
   const result = await db.query(
     'INSERT INTO food_logs (user_id, nama_makanan, kalori, tanggal) VALUES ($1, $2, $3, $4) RETURNING *',

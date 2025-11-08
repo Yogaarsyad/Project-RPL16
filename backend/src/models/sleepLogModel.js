@@ -1,5 +1,6 @@
 const db = require('../config/db');
 
+// Membuat log tidur baru.
 const createSleepLog = async (userId, tanggal, waktu_tidur, waktu_bangun, kualitas_tidur) => {
   const result = await db.query(
     `INSERT INTO sleep_logs 

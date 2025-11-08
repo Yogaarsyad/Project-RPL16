@@ -1,6 +1,6 @@
-// src/middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
 
+// Middleware untuk melindungi rute dengan otentikasi JWT.
 const protect = (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {

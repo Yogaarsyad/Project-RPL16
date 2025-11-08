@@ -108,7 +108,6 @@ html, body, #root {
   animation: fadeInUp 0.5s ease-out forwards;
 }
 
-/* --- Animasi berlian untuk Navbar --- */
 .diamond {
   fill: #ffd700; /* warna awal emas */
   transform-origin: center;

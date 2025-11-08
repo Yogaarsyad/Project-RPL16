@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+// Navbar komponen dengan logo dan tombol login.
 function Navbar() {
   const navigate = useNavigate();
 

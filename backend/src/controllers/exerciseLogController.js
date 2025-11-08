@@ -1,9 +1,8 @@
-// backend/src/controllers/exerciseLogController.js
 const model = require('../models/exerciseLogModel');
 
 exports.addLog = async (req, res) => {
     try {
-        // Panggil nama fungsi yang baru: createExerciseLog
+       
         const newLog = await model.createExerciseLog(
             req.user.id, 
             req.body.nama_olahraga, 
@@ -16,6 +15,7 @@ exports.addLog = async (req, res) => {
         res.status(500).json({ message: 'Gagal menambahkan log olahraga', error: error.message });
     }
 };
+
 
 exports.getLogs = async (req, res) => {
     try {

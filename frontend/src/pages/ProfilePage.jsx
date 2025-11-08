@@ -10,7 +10,7 @@ function ProfilePage() {
   });
   const [loading, setLoading] = useState(true);
 
-  // 1. Ambil data profil dari backend saat halaman dimuat
+  // Ambil data profil dari backend saat komponen dimuat.
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -18,7 +18,7 @@ function ProfilePage() {
         const user = JSON.parse(localStorage.getItem('user'));
         setProfile({
           bio: data.bio || '',
-          nama: user.nama || '', // Nama diambil dari user login
+          nama: user.nama || '', // Menggunakan nama dari localStorage jika tersedia.
           avatar_url: data.avatar_url || 'https://via.placeholder.com/150'
         });
       } catch (error) {

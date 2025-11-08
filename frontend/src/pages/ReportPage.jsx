@@ -92,6 +92,9 @@ function ReportPage() {
     });
   };
 
+
+
+
   // Fungsi untuk memproses data tidur
   const processSleepData = (logs) => {
     const aggregatedData = logs.reduce((acc, log) => {

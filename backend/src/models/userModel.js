@@ -1,7 +1,9 @@
-// src/models/userModel.js
+
 const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 
+
+// Fungsi untuk membuat pengguna baru.
 const createUser = async (nama, email, password) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   const result = await db.query(

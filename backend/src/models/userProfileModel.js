@@ -1,11 +1,9 @@
-// backend/src/models/userProfileModel.js
-
 const db = require('../config/db');
 
 /**
- * Mengambil data profil dari tabel user_profiles berdasarkan user_id.
+
  * @param {number} userId ID pengguna.
- * @returns {Promise<object>} Data profil pengguna.
+  @returns {Promise<object>} Data profil pengguna.
  */
 const getProfileByUserId = async (userId) => {
     const result = await db.query('SELECT * FROM user_profiles WHERE user_id = $1', [userId]);
@@ -13,14 +11,13 @@ const getProfileByUserId = async (userId) => {
 };
 
 /**
- * Memperbarui data profil di tabel user_profiles.
- * @param {number} userId ID pengguna.
- * @param {object} profileData Data profil yang akan diupdate { tinggi_cm, berat_kg, usia, jenis_kelamin, bio, avatar_url }.
- * @returns {Promise<object>} Data profil yang sudah diperbarui.
+
+ * @param {number} userId 
+ * @param {object} profileData 
+ * @returns {Promise<object>}
  */
 const updateProfileByUserId = async (userId, { tinggi_cm, berat_kg, usia, jenis_kelamin, bio, avatar_url }) => {
-    // Query ini akan mengupdate kolom yang relevan.
-    // COALESCE digunakan agar nilai lama tidak terganti jadi NULL jika data baru tidak disediakan.
+   
     const result = await db.query(
         `UPDATE user_profiles 
          SET 

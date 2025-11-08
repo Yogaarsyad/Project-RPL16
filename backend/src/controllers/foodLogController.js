@@ -1,4 +1,4 @@
-// src/controllers/foodLogController.js
+
 const foodLogModel = require('../models/foodLogModel');
 const axios = require('axios');
 

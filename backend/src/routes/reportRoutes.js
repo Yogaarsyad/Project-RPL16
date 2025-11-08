@@ -3,7 +3,7 @@ const router = express.Router();
 const reportController = require('../controllers/reportController');
 const { protect } = require('../middleware/authMiddleware');
 
-// Pastikan controller Anda memiliki fungsi 'getReportData' dan 'getStatistics'
+// Mendapatkan data laporan kesehatan untuk pengguna yang diautentikasi.
 router.get('/data', protect, reportController.getReportData);
 router.get('/statistics', protect, reportController.getStatistics);
 
