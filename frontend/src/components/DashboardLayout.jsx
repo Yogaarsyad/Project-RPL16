@@ -1,117 +1,121 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { FiMenu, FiX, FiLogOut, FiBarChart2, FiHome, FiUser } from 'react-icons/fi';
-import { motion } from 'framer-motion';
 
 function DashboardLayout({ onLogout }) {
-  const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
+
+  // Detect mobile screen
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth >= 768) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+      }
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const handleLifeMonClick = () => {
     navigate('/dashboard');
+    if (isMobile) setSidebarOpen(false);
   };
 
-  const handleProfileClick = (e) => {
-    e.preventDefault();
-    
-    // Navigasi dengan delay untuk menampilkan animasi
-    setTimeout(() => {
-      navigate('/dashboard/profile');
-    }, 300);
+  const handleNavClick = () => {
+    if (isMobile) {
+      setSidebarOpen(false);
+    }
   };
 
   return (
     <div className="flex h-screen bg-gray-100 font-sans">
-      
+      {/* Mobile Overlay */}
+      {isSidebarOpen && isMobile && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-20"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar Navigation */}
       <aside
-        className={`bg-gray-800 text-white flex flex-col transition-all duration-300 ease-in-out ${
-          isSidebarOpen ? 'w-64' : 'w-0'
-        } overflow-hidden`}
+        className={`bg-gray-800 text-white flex flex-col transition-all duration-300 ease-in-out z-30
+          ${isSidebarOpen ? 'w-64 translate-x-0' : 'w-0 -translate-x-full'} 
+          md:w-64 md:translate-x-0 fixed md:static h-full overflow-hidden`}
       >
-        {/* Header dengan LifeMon yang bisa diklik */}
-        <div className="p-4 border-b border-gray-700 flex justify-between items-center">
-          <motion.button
+        <div className="p-4 border-b border-gray-700 flex justify-between items-center min-w-[256px]">
+          <button
             onClick={handleLifeMonClick}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={`font-bold text-xl whitespace-nowrap ${!isSidebarOpen && 'hidden'} bg-transparent border-none text-white cursor-pointer`}
+            className="font-bold text-xl whitespace-nowrap bg-transparent border-none text-white cursor-pointer hover:text-blue-300 transition-colors"
           >
             LifeMon
-          </motion.button>
+          </button>
         </div>
         
         {/* Navigasi Menu */}
-        <nav className="flex-1 p-4 space-y-2">
-          <Link to="/dashboard" className="flex items-center p-2 rounded-md hover:bg-gray-700 whitespace-nowrap">
-            <FiHome className="mr-3 flex-shrink-0" />
-            <span className={!isSidebarOpen && 'hidden'}>Dashboard</span>
+        <nav className="flex-1 p-4 space-y-2 min-w-[256px]">
+          <Link 
+            to="/dashboard" 
+            onClick={handleNavClick}
+            className="flex items-center p-3 rounded-md hover:bg-gray-700 whitespace-nowrap transition-all duration-200"
+          >
+            <FiHome className="mr-3 flex-shrink-0 text-lg" />
+            <span>Dashboard</span>
           </Link>
           
-          <Link to="/dashboard/laporan" className="flex items-center p-2 rounded-md hover:bg-gray-700 whitespace-nowrap">
-            <FiBarChart2 className="mr-3 flex-shrink-0" />
-            <span className={!isSidebarOpen && 'hidden'}>Report</span>
+          <Link 
+            to="/dashboard/laporan" 
+            onClick={handleNavClick}
+            className="flex items-center p-3 rounded-md hover:bg-gray-700 whitespace-nowrap transition-all duration-200"
+          >
+            <FiBarChart2 className="mr-3 flex-shrink-0 text-lg" />
+            <span>Report</span>
           </Link>
 
-          {/* Profile dengan animasi */}
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ 
-              scale: 0.98,
-              backgroundColor: "rgba(55, 65, 81, 0.5)"
-            }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          <Link 
+            to="/dashboard/profile" 
+            onClick={handleNavClick}
+            className="flex items-center p-3 rounded-md hover:bg-gray-700 whitespace-nowrap transition-all duration-200"
           >
-            <Link 
-              to="/dashboard/profile" 
-              onClick={handleProfileClick}
-              className="flex items-center p-2 rounded-md hover:bg-gray-700 whitespace-nowrap"
-            >
-              <motion.div
-                animate={{
-                  rotate: [0, -5, 5, 0],
-                }}
-                transition={{
-                  duration: 0.5,
-                  ease: "easeInOut",
-                }}
-              >
-                <FiUser className="mr-3 flex-shrink-0" />
-              </motion.div>
-              <span className={!isSidebarOpen && 'hidden'}>Profil</span>
-            </Link>
-          </motion.div>
+            <FiUser className="mr-3 flex-shrink-0 text-lg" />
+            <span>Profil</span>
+          </Link>
         </nav>
         
         {/* Logout Button */}
-        <div className="p-4 border-t border-gray-700">
-          <motion.button 
+        <div className="p-4 border-t border-gray-700 min-w-[256px]">
+          <button 
             onClick={onLogout} 
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="flex items-center w-full p-2 rounded-md hover:bg-red-500 whitespace-nowrap"
+            className="flex items-center w-full p-3 rounded-md hover:bg-red-600 whitespace-nowrap transition-all duration-200"
           >
-            <FiLogOut className="mr-3 flex-shrink-0" />
-            <span className={!isSidebarOpen && 'hidden'}>Logout</span>
-          </motion.button>
+            <FiLogOut className="mr-3 flex-shrink-0 text-lg" />
+            <span>Logout</span>
+          </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <header className="bg-white shadow-md p-4 flex items-center">
-          <motion.button 
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="bg-white shadow-md p-4 flex items-center sticky top-0 z-10">
+          <button 
             onClick={() => setSidebarOpen(!isSidebarOpen)} 
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="text-gray-600 text-2xl"
+            className="text-gray-600 text-2xl p-2 rounded-lg hover:bg-gray-200 transition-colors md:hidden"
           >
             {isSidebarOpen ? <FiX /> : <FiMenu />}
-          </motion.button>
-          <h2 className="ml-4 text-xl font-semibold text-gray-700">LifeMon Dashboard</h2>
+          </button>
+          <h2 className="ml-2 text-lg md:text-xl font-semibold text-gray-700 truncate">
+            LifeMon Dashboard
+          </h2>
         </header>
 
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-3 md:p-6 overflow-y-auto">
           <Outlet />
         </main>
       </div>

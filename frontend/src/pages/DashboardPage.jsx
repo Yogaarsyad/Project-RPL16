@@ -201,39 +201,39 @@ function DashboardPage() {
     );
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-300 to-blue-500 py-10 px-2">
+return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-300 to-blue-500 py-4 px-2 sm:px-4">
       {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal />
       
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Column 1: Input Forms */}
-        <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white rounded-2xl shadow-xl border-t-4 border-blue-400 p-6">
+        <div className="lg:col-span-1 space-y-4 md:space-y-6">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border-t-4 border-blue-400 p-4 md:p-6">
             <FoodLogForm onAddLog={handleAddFoodLog} />
           </div>
-          <div className="bg-white rounded-2xl shadow-xl border-t-4 border-blue-400 p-6">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border-t-4 border-blue-400 p-4 md:p-6">
             <ExerciseLogForm onAddLog={handleAddExerciseLog} />
           </div>
-          <div className="bg-white rounded-2xl shadow-xl border-t-4 border-blue-400 p-6">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-lg border-t-4 border-blue-400 p-4 md:p-6">
             <SleepLogForm onAddLog={handleAddSleepLog} />
           </div>
         </div>
 
         {/* Column 2: Log Lists */}
-        <div className="lg:col-span-2 bg-white p-8 rounded-2xl shadow-xl border-t-4 border-blue-400">
+        <div className="lg:col-span-2 bg-white p-4 md:p-6 rounded-xl md:rounded-2xl shadow-lg border-t-4 border-blue-400">
           {/* Food History */}
-          <h3 className="text-2xl font-bold mb-6 text-blue-700 text-center drop-shadow">Food History</h3>
-          <div className="h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
-            <ul className="space-y-4">
+          <h3 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-blue-700 text-center">Food History</h3>
+          <div className="h-64 md:h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
+            <ul className="space-y-3 md:space-y-4">
               {logs.length > 0 ? (
                 logs.map(log => (
                   <li
                     key={log.id}
-                    className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-blue-50 via-blue-100 to-blue-200 border border-blue-200 shadow hover:scale-[1.02] transition-transform group"
+                    className="flex justify-between items-center p-3 md:p-4 rounded-lg md:rounded-xl bg-gradient-to-r from-blue-50 via-blue-100 to-blue-200 border border-blue-200 shadow hover:scale-[1.02] transition-transform group"
                   >
                     <div className="flex-1">
-                      <p className="font-semibold text-blue-900">{log.nama_makanan}</p>
+                      <p className="font-semibold text-blue-900 text-sm md:text-base">{log.nama_makanan}</p>
                       <p className="text-xs text-blue-600">
                         {new Date(log.tanggal).toLocaleDateString('en-US', {
                           weekday: 'long',
@@ -243,16 +243,16 @@ function DashboardPage() {
                         })}
                       </p>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <span className="font-bold text-blue-700 bg-blue-100 px-3 py-1 rounded-full shadow">
+                    <div className="flex items-center space-x-2 md:space-x-3">
+                      <span className="font-bold text-blue-700 bg-blue-100 px-2 py-1 md:px-3 md:py-1 rounded-full shadow text-sm md:text-base">
                         {log.kalori} kcal
                       </span>
                       <button
                         onClick={() => confirmDelete('food', log.id)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 text-red-500 hover:bg-red-100 rounded-full"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 md:p-2 text-red-500 hover:bg-red-100 rounded-full"
                         title="Delete food log"
                       >
-                        <FiTrash2 size={16} />
+                        <FiTrash2 size={14} />
                       </button>
                     </div>
                   </li>
@@ -264,17 +264,17 @@ function DashboardPage() {
           </div>
 
           {/* Exercise History */}
-          <h3 className="text-2xl font-bold mt-10 mb-6 text-blue-700 text-center drop-shadow">Exercise History</h3>
-          <div className="h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
-            <ul className="space-y-4">
+          <h3 className="text-xl md:text-2xl font-bold mt-8 md:mt-10 mb-4 md:mb-6 text-blue-700 text-center">Exercise History</h3>
+          <div className="h-64 md:h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
+            <ul className="space-y-3 md:space-y-4">
               {exerciseLogs.length > 0 ? (
                 exerciseLogs.map(log => (
                   <li
                     key={log.id}
-                    className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-blue-50 via-blue-100 to-blue-200 border border-blue-200 shadow hover:scale-[1.02] transition-transform group"
+                    className="flex justify-between items-center p-3 md:p-4 rounded-lg md:rounded-xl bg-gradient-to-r from-blue-50 via-blue-100 to-blue-200 border border-blue-200 shadow hover:scale-[1.02] transition-transform group"
                   >
                     <div className="flex-1">
-                      <p className="font-semibold text-blue-900">{log.jenis_olahraga || log.nama_olahraga}</p>
+                      <p className="font-semibold text-blue-900 text-sm md:text-base">{log.jenis_olahraga || log.nama_olahraga}</p>
                       <p className="text-xs text-blue-600">
                         {log.tanggal
                           ? new Date(log.tanggal).toLocaleDateString('en-US', {
@@ -287,16 +287,16 @@ function DashboardPage() {
                       </p>
                       <p className="text-xs text-blue-500">Duration: {log.durasi_menit} minutes</p>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <span className="font-bold text-blue-700 bg-blue-100 px-3 py-1 rounded-full shadow">
+                    <div className="flex items-center space-x-2 md:space-x-3">
+                      <span className="font-bold text-blue-700 bg-blue-100 px-2 py-1 md:px-3 md:py-1 rounded-full shadow text-sm md:text-base">
                         {log.kalori_terbakar} kcal
                       </span>
                       <button
                         onClick={() => confirmDelete('exercise', log.id)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 text-red-500 hover:bg-red-100 rounded-full"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 md:p-2 text-red-500 hover:bg-red-100 rounded-full"
                         title="Delete exercise log"
                       >
-                        <FiTrash2 size={16} />
+                        <FiTrash2 size={14} />
                       </button>
                     </div>
                   </li>
@@ -308,17 +308,17 @@ function DashboardPage() {
           </div>
 
           {/* Sleep History */}
-          <h3 className="text-2xl font-bold mt-10 mb-6 text-blue-700 text-center drop-shadow">Sleep History</h3>
-          <div className="h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
-            <ul className="space-y-4">
+          <h3 className="text-xl md:text-2xl font-bold mt-8 md:mt-10 mb-4 md:mb-6 text-blue-700 text-center">Sleep History</h3>
+          <div className="h-64 md:h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-100">
+            <ul className="space-y-3 md:space-y-4">
               {sleepLogs.length > 0 ? (
                 sleepLogs.map(log => (
                   <li
                     key={log.id}
-                    className="flex justify-between items-center p-4 rounded-xl bg-gradient-to-r from-blue-50 via-blue-100 to-blue-200 border border-blue-200 shadow hover:scale-[1.02] transition-transform group"
+                    className="flex justify-between items-center p-3 md:p-4 rounded-lg md:rounded-xl bg-gradient-to-r from-blue-50 via-blue-100 to-blue-200 border border-blue-200 shadow hover:scale-[1.02] transition-transform group"
                   >
                     <div className="flex-1">
-                      <p className="font-semibold text-blue-900">
+                      <p className="font-semibold text-blue-900 text-sm md:text-base">
                         {log.waktu_tidur && log.waktu_bangun
                           ? `${getSleepDuration(log.waktu_tidur, log.waktu_bangun)} hours of sleep`
                           : 'Duration unavailable'}
@@ -337,10 +337,10 @@ function DashboardPage() {
                     </div>
                     <button
                       onClick={() => confirmDelete('sleep', log.id)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-2 text-red-500 hover:bg-red-100 rounded-full"
+                      className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 md:p-2 text-red-500 hover:bg-red-100 rounded-full"
                       title="Delete sleep log"
                     >
-                      <FiTrash2 size={16} />
+                      <FiTrash2 size={14} />
                     </button>
                   </li>
                 ))
