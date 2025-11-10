@@ -139,4 +139,25 @@ function calculateAverageSleepHours(sleepLogs) {
   return Number((totalHours / sleepLogs.length).toFixed(1));
 }
 
+exports.getExerciseTrend = async (req, res) => {
+  try {
+    // TODO: Tambahkan logika untuk mengambil data exercise trend
+    console.log('📊 Getting exercise trend for user:', req.user.id);
+    
+    // Kirim respons placeholder untuk saat ini
+    res.json({
+      success: true,
+      message: 'Exercise trend data (placeholder)',
+      data: [] 
+    });
+
+  } catch (error) {
+    console.error('❌ Error in getExerciseTrend:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Terjadi kesalahan saat mengambil tren olahraga'
+    });
+  }
+};
+
 module.exports = exports;
