@@ -5,5 +5,6 @@ const { protect } = require('../middleware/authMiddleware'); // GUNAKAN { protec
 
 router.post('/', protect, sleepLogController.addSleepLog);
 router.get('/', protect, sleepLogController.getSleepLogs);
+router.delete('/:id', protect, sleepLogController.deleteSleepLog);
 
 module.exports = router;

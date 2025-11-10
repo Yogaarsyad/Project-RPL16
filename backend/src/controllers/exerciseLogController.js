@@ -64,3 +64,18 @@ exports.getLogs = async (req, res) => {
     });
   }
 };
+
+exports.deleteLog = async (req, res) => {
+  try {
+    const logId = parseInt(req.params.id);
+    const userId = req.user.id;
+    const deletedLog = await model.deleteExerciseLogById(logId, userId);
+    
+    if (!deletedLog) {
+      return res.status(404).json({ message: 'Log tidak ditemukan atau Anda tidak berhak menghapusnya' });
+    }
+    res.json({ message: 'Log berhasil dihapus' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};

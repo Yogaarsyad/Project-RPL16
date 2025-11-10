@@ -6,5 +6,6 @@ const { protect } = require('../middleware/authMiddleware'); // GUNAKAN { protec
 router.post('/', protect, foodLogController.addFoodLog);
 router.get('/', protect, foodLogController.getFoodLogs);
 router.post('/calories', protect, foodLogController.getCalories);
+router.delete('/:id', protect, foodLogController.deleteFoodLog);
 
 module.exports = router;

@@ -1,6 +1,5 @@
 const db = require('../config/db');
 
-// Membuat log tidur baru.
 const createSleepLog = async (userId, tanggal, waktu_tidur, waktu_bangun, kualitas_tidur) => {
   const result = await db.query(
     `INSERT INTO sleep_logs 
@@ -19,4 +18,14 @@ const getSleepLogsByUserId = async (userId) => {
     return result.rows;
 };
 
-module.exports = { createSleepLog, getSleepLogsByUserId };
+const deleteSleepLogById = async (logId, userId) => {
+  const result = await db.query(
+    'DELETE FROM sleep_logs WHERE id = $1 AND user_id = $2 RETURNING *',
+    [logId, userId]
+  );
+  return result.rows[0];
+};
+
+
+
+module.exports = { createSleepLog, getSleepLogsByUserId, deleteSleepLogById };

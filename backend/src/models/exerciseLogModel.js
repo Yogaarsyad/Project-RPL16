@@ -1,4 +1,3 @@
-// CORRECT PATH: from src/models to src/config
 const db = require('../config/db');
 
 const createExerciseLog = async (userId, nama_olahraga, durasi_menit, kalori_terbakar, tanggal) => {
@@ -49,7 +48,17 @@ const getExerciseLogsByUserId = async (userId) => {
   }
 };
 
+
+const deleteExerciseLogById = async (logId, userId) => {
+  const result = await db.query(
+    'DELETE FROM exercise_logs WHERE id = $1 AND user_id = $2 RETURNING *',
+    [logId, userId]
+  );
+  return result.rows[0];
+};
+
 module.exports = {
   createExerciseLog,
-  getExerciseLogsByUserId
+  getExerciseLogsByUserId,
+  deleteExerciseLogById
 };

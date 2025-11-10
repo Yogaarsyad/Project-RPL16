@@ -24,9 +24,9 @@ export const deleteFoodLog = (logId) => API.delete(`/food-logs/${logId}`);
 export const checkCalories = (name) => API.post('/food-logs/calories', { name });
 
 // --- Exercise Log ---
-// PERBAIKAN: Hapus duplikasi dan gunakan API yang konsisten
 export const getExerciseLogs = () => API.get('/exercise-logs');
 export const addExerciseLog = (logData) => API.post('/exercise-logs', logData);
+export const deleteExerciseLog = (logId) => API.delete(`/exercise-logs/${logId}`);
 
 // --- Sleep Log ---
 export const addSleepLog = (logData) => API.post('/sleep-logs', logData);
