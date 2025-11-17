@@ -1,22 +1,31 @@
 import React, { useState } from 'react';
 import { checkCalories } from '../services/api';
+import { useLog } from '../context/LogContext'; // Ganti dengan useLog
 
-function FoodLogForm({ onAddLog }) {
+function FoodLogForm() {
   const [foodName, setFoodName] = useState('');
   const [calories, setCalories] = useState('');
   const [date, setDate] = useState('');
   const [aiResponse, setAiResponse] = useState(null);
   const [checking, setChecking] = useState(false);
 
+  const { addFoodLog } = useLog(); // Ganti dengan useLog
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // send keys that backend model expects (nama_makanan, kalori, tanggal).
-    onAddLog({ nama_makanan: foodName, kalori: parseInt(calories), tanggal: date });
+    
+    addFoodLog({ 
+      nama_makanan: foodName, 
+      kalori: parseInt(calories), 
+      tanggal: date 
+    });
+    
     setFoodName('');
     setCalories('');
     setDate('');
+    setAiResponse(null);
   };
-
+  
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h3 className="text-lg font-semibold mb-4 text-gray-800">Log New Food</h3>

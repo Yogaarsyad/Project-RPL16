@@ -1,7 +1,7 @@
 // src/components/SleepHistory.js
 
 import React from 'react';
-import { FaTrash } from 'react-icons/fa'; // <-- 1. IMPOR IKON
+import { FaTrash } from 'react-icons/fa'; // <-- IMPOR IKON TRASH
 import { useLog } from '../context/LogContext';
 
 function SleepHistory({ sleepLogs = [] }) {
@@ -48,14 +48,14 @@ function SleepHistory({ sleepLogs = [] }) {
                 </div>
                 <div className="flex items-center space-x-2 ml-4">
                   
-                  {/* === 3. TOMBOL HAPUS BARU (TIDAK HITAM) === */}
+                  {/* === TOMBOL HAPUS BARU (TIDAK HITAM) === */}
                   <button
                     onClick={() => deleteSleepLog(log.id)}
                     className="p-2 text-gray-400 rounded-md transition-colors duration-200
                                hover:bg-red-100 hover:text-red-600"
                     aria-label="Hapus log tidur"
                   >
-                    <FaTrash /> {/* <-- 2. GUNAKAN IKON */}
+                    <FaTrash /> {/* <-- GUNAKAN IKON TRASH */}
                   </button>
                   {/* === AKHIR TOMBOL HAPUS === */}
                   

@@ -1,388 +1,470 @@
-// frontend/src/pages/ReportPage.jsx
 import React, { useState, useEffect } from 'react';
-import { getReportData, getStatistics } from '../services/api';
-import { Line, Bar } from 'react-chartjs-2';
+import { useLog } from '../context/LogContext';
+import { getReportData, getStatistics, getRecommendations } from '../services/api';
 import {
-  Chart as ChartJS, CategoryScale, LinearScale, PointElement,
-  LineElement, Title, Tooltip, Legend, Filler, BarElement
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend,
 } from 'chart.js';
+import { Bar, Line, Doughnut } from 'react-chartjs-2';
 
+// Register ChartJS components
 ChartJS.register(
-  CategoryScale, LinearScale, PointElement, LineElement, 
-  Title, Tooltip, Legend, Filler, BarElement
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend
 );
 
-// --- Analysis Component ---
-function AnalysisReport({ label, average, unit }) {
-  // ... (kode AnalysisReport Anda tidak berubah)
-  let analysis = "";
-  if (label === 'Calories') {
-    if (average > 2500) analysis = `Your average intake (${average.toLocaleString()} kcal) appears high. Consider lower-calorie food options.`;
-    else if (average < 1800) analysis = `Your average intake (${average.toLocaleString()} kcal) is somewhat low. Make sure you're getting enough energy.`;
-    else analysis = `You're maintaining your calorie intake (${average.toLocaleString()} kcal) very well. Keep it up!`;
-  } else if (label === 'Sleep') {
-    if (average > 9) analysis = `You're getting excellent average rest time (${average} hours). Great job!`;
-    else if (average < 6) analysis = `Your average sleep (${average} hours) appears low. Try aiming for 7-8 hours per night.`;
-    else analysis = `You're getting healthy average sleep (${average} hours). Consistency is key.`;
-  } else if (label === 'Exercise') {
-    if (average > 45) analysis = `You're very active with an average of ${average} minutes/day. Amazing! Make sure to get enough rest.`;
-    else if (average < 15) analysis = `Your average activity (${average} minutes/day) is still low. Try adding a 20-minute walk every day.`;
-    else analysis = `You're consistent with exercise (${average} minutes/day). This is a great habit!`;
-  }
-  return (
-    <div className="mt-4 p-3 bg-gray-50 rounded-lg animate-fade-in">
-      <p className="text-sm text-gray-700">
-        <strong>Analysis:</strong> {analysis}
-      </p>
-    </div>
-  );
-}
+function ReportPage() {
+  const { foodLogs, exerciseLogs, sleepLogs } = useLog();
+  const [reportData, setReportData] = useState(null);
+  const [statistics, setStatistics] = useState(null);
+  const [recommendations, setRecommendations] = useState([]);
+  const [timeRange, setTimeRange] = useState('week');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-// --- StatCard Component ---
-function StatCard({ title, value, unit, icon, color }) {
-  // ... (kode StatCard Anda tidak berubah)
-  const formatValue = (val) => {
-    if (typeof val === 'number') {
-      return val.toLocaleString();
-    }
-    if (typeof val === 'string') {
-      const num = parseFloat(val);
-      if (!isNaN(num)) {
-        return num.toLocaleString();
-      }
-      return val;
-    }
-    if (typeof val === 'object' && val !== null) {
-      // Coba akses properti 'value', 'total', atau ambil angka pertama
-      const num = val.value || val.total || Object.values(val).find(v => typeof v === 'number');
-      if (num !== undefined) {
-        return num.toLocaleString();
-      }
-      return '0';
-    }
-    return '0';
+  // Process data for charts from context (realtime)
+  const processChartData = () => {
+    const days = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 365;
+    
+    const dateRange = [...Array(days)].map((_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      return d.toISOString().split('T')[0];
+    }).reverse();
+
+    // Food calories per day
+    const foodCaloriesData = dateRange.map(date => {
+      const dayLogs = foodLogs.filter(log => log.tanggal === date);
+      return dayLogs.reduce((sum, log) => sum + (log.kalori || 0), 0);
+    });
+
+    // Exercise calories burned per day
+    const exerciseCaloriesData = dateRange.map(date => {
+      const dayLogs = exerciseLogs.filter(log => log.tanggal === date);
+      return dayLogs.reduce((sum, log) => sum + (log.kalori_terbakar || 0), 0);
+    });
+
+    // Sleep hours per day
+    const sleepHoursData = dateRange.map(date => {
+      const dayLogs = sleepLogs.filter(log => log.tanggal === date);
+      return dayLogs.reduce((sum, log) => {
+        if (!log.waktu_tidur || !log.waktu_bangun) return sum;
+        try {
+          const sleepTime = new Date(log.waktu_tidur);
+          const wakeTime = new Date(log.waktu_bangun);
+          const hours = (wakeTime - sleepTime) / (1000 * 60 * 60);
+          return sum + Math.max(0, Math.min(24, hours)); // Validate hours range
+        } catch (error) {
+          console.error('Error calculating sleep hours:', error);
+          return sum;
+        }
+      }, 0);
+    });
+
+    // Activity distribution
+    const activityDistribution = {
+      food: foodLogs.length,
+      exercise: exerciseLogs.length,
+      sleep: sleepLogs.length
+    };
+
+    return {
+      dateRange,
+      foodCaloriesData,
+      exerciseCaloriesData,
+      sleepHoursData,
+      activityDistribution
+    };
   };
 
-  return (
-    <div className={`bg-white p-4 rounded-lg shadow-md border-l-4 ${color}`}>
-      <div className="flex items-center">
-        <div className={`p-2 rounded-full ${color.replace('border-l-', 'bg-').replace('-400', '-100')} mr-3`}>
-          {icon}
-        </div>
-        <div>
-          <p className="text-sm text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-800">
-            {formatValue(value)} <span className="text-sm font-normal">{unit}</span>
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
+  // Fetch additional data from API
+  const fetchReportData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [reportRes, statsRes, recRes] = await Promise.all([
+        getReportData(timeRange),
+        getStatistics(timeRange),
+        getRecommendations({
+          foodLogs: foodLogs.slice(-50), // Last 50 entries for context
+          exerciseLogs: exerciseLogs.slice(-50),
+          sleepLogs: sleepLogs.slice(-50),
+          timeRange
+        })
+      ]);
+      
+      setReportData(reportRes.data);
+      setStatistics(statsRes.data);
+      setRecommendations(recRes.data || []);
+    } catch (error) {
+      console.error('Error fetching report data:', error);
+      setError('Failed to load some report data. Showing available information...');
+      // Set default recommendations if API fails
+      setRecommendations(getDefaultRecommendations());
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Fallback recommendations if AI service is unavailable
+  const getDefaultRecommendations = () => {
+    const recs = [];
+    
+    // Analyze sleep patterns
+    const avgSleep = sleepLogs.reduce((sum, log) => {
+      if (log.waktu_tidur && log.waktu_bangun) {
+        const sleepTime = new Date(log.waktu_tidur);
+        const wakeTime = new Date(log.waktu_bangun);
+        return sum + ((wakeTime - sleepTime) / (1000 * 60 * 60));
+      }
+      return sum;
+    }, 0) / (sleepLogs.length || 1);
 
-// --- AI Assistant Placeholder ---
-function AIPlaceholder() {
-  // ... (kode AIPlaceholder Anda tidak berubah)
-  return (
-    <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg border-2 border-dashed border-purple-200 text-center animate-pulse">
-      <div className="flex items-center justify-center mb-3">
-        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-3">
-          <span className="text-purple-600 text-lg">🤖</span>
-        </div>
-        <h3 className="text-lg font-semibold text-purple-800">AI Health Assistant</h3>
-      </div>
-      <p className="text-purple-600 mb-4">Coming Soon: Intelligent analysis and personalized recommendations</p>
-      <div className="inline-flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
-        <span className="animate-pulse">🔄</span>
-        <span className="ml-2">AI Features Loading...</span>
-      </div>
-    </div>
-  );
-}
+    if (avgSleep < 7) {
+      recs.push({
+        title: 'Improve Sleep Duration',
+        description: 'Aim for 7-9 hours of sleep per night for better recovery and health.',
+        type: 'sleep'
+      });
+    }
 
-function ReportPage() {
-  // State for 3 types of data
-  const [foodData, setFoodData] = useState({});
-  const [sleepData, setSleepData] = useState({});
-  const [exerciseData, setExerciseData] = useState({});
-  
-  // State for analysis data
-  const [foodStats, setFoodStats] = useState({ avg: 0, data: [], total: 0 });
-  const [sleepStats, setSleepStats] = useState({ avg: 0, data: [] });
-  const [exerciseStats, setExerciseStats] = useState({ avg: 0, data: [] });
-  
-  // State for overall statistics
-  const [overallStats, setOverallStats] = useState({});
-  
-  const [loading, setLoading] = useState(true);
+    // Analyze calorie balance
+    const totalCaloriesIn = foodLogs.reduce((sum, log) => sum + (log.kalori || 0), 0);
+    const totalCaloriesOut = exerciseLogs.reduce((sum, log) => sum + (log.kalori_terbakar || 0), 0);
+    const netCalories = totalCaloriesIn - totalCaloriesOut;
+
+    if (netCalories > 500) {
+      recs.push({
+        title: 'Balance Caloric Intake',
+        description: 'Consider adjusting your diet or increasing physical activity to maintain energy balance.',
+        type: 'nutrition'
+      });
+    }
+
+    // Activity consistency
+    if (foodLogs.length < 3) {
+      recs.push({
+        title: 'Track Meals Regularly',
+        description: 'Log your meals consistently to get better insights into your eating patterns.',
+        type: 'consistency'
+      });
+    }
+
+    return recs.slice(0, 4); // Return max 4 recommendations
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [reportResponse, statsResponse] = await Promise.all([
-          getReportData(),
-          getStatistics()
-        ]);
-        
-        if (reportResponse.data.success) {
-          // Process and set all data
-          processCalorieData(reportResponse.data.data.foodLogs);
-          processSleepData(reportResponse.data.data.sleepLogs);
-          processExerciseData(reportResponse.data.data.exerciseLogs);
-        }
-        
-        if (statsResponse.data.success) {
-          setOverallStats(statsResponse.data.data);
-        }
-      } catch (error) {
-        console.error('Error fetching report data:', error);
-      } finally {
-        setLoading(false);
+    fetchReportData();
+  }, [timeRange]);
+
+  const chartData = processChartData();
+
+  // Chart configurations
+  const calorieComparisonChart = {
+    labels: chartData.dateRange.map(date => {
+      const dateObj = new Date(date);
+      if (timeRange === 'week') {
+        return dateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' });
+      } else if (timeRange === 'month') {
+        return dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+      } else {
+        return dateObj.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
       }
-    };
-    fetchData();
-  }, []);
-
-  // Function to process calorie data
-  const processCalorieData = (logs) => {
-    const aggregatedData = logs.reduce((acc, log) => {
-      const date = new Date(log.tanggal).toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
-      acc[date] = (acc[date] || 0) + Number(log.kalori);
-      return acc;
-    }, {});
-
-    const labels = Object.keys(aggregatedData);
-    const data = Object.values(aggregatedData);
-    const total = data.reduce((sum, val) => sum + val, 0);
-    const avg = data.length > 0 ? Math.round(total / data.length) : 0;
-    
-    // PERBAIKAN DARI SEBELUMNYA: Pastikan 'total' juga disimpan
-    setFoodStats({ avg, data, total }); // <- 'total' sudah ada di sini
-    
-    setFoodData({
-      labels: labels,
-      datasets: [{
-        label: 'Daily Calories (kcal)',
-        data: data,
-        borderColor: 'rgb(37, 99, 235)',
-        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+    }),
+    datasets: [
+      {
+        label: 'Calories Consumed',
+        data: chartData.foodCaloriesData,
+        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+        borderColor: 'rgb(59, 130, 246)',
         borderWidth: 2,
-        fill: true, 
-        tension: 0.4
-      }]
-    });
+      },
+      {
+        label: 'Calories Burned',
+        data: chartData.exerciseCaloriesData,
+        backgroundColor: 'rgba(34, 197, 94, 0.8)',
+        borderColor: 'rgb(34, 197, 94)',
+        borderWidth: 2,
+      }
+    ],
   };
 
-  // Function to process sleep data
-  const processSleepData = (logs) => {
-    // ... (kode processSleepData Anda tidak berubah)
-    const aggregatedData = logs.reduce((acc, log) => {
-      const date = new Date(log.tanggal).toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
-      const sleepTime = new Date(log.waktu_tidur);
-      const wakeTime = new Date(log.waktu_bangun);
-      const hoursSlept = (wakeTime - sleepTime) / (1000 * 60 * 60);
-      acc[date] = (acc[date] || 0) + hoursSlept;
-      return acc;
-    }, {});
-
-    const labels = Object.keys(aggregatedData);
-    const data = Object.values(aggregatedData).map(hours => hours.toFixed(1));
-    const total = data.reduce((sum, val) => sum + parseFloat(val), 0);
-    const avg = data.length > 0 ? (total / data.length).toFixed(1) : 0;
-    
-    setSleepStats({ avg, data });
-    setSleepData({
-      labels: labels,
-      datasets: [{
-        label: 'Sleep Hours (hours)',
-        data: data,
-        borderColor: 'rgb(22, 163, 74)',
-        backgroundColor: 'rgba(22, 163, 74, 0.1)',
+  const sleepTrendChart = {
+    labels: chartData.dateRange.map(date => {
+      const dateObj = new Date(date);
+      if (timeRange === 'week') {
+        return dateObj.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' });
+      } else if (timeRange === 'month') {
+        return dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+      } else {
+        return dateObj.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
+      }
+    }),
+    datasets: [
+      {
+        label: 'Sleep Hours',
+        data: chartData.sleepHoursData,
+        backgroundColor: 'rgba(168, 85, 247, 0.6)',
+        borderColor: 'rgb(168, 85, 247)',
         borderWidth: 2,
-        fill: true, 
-        tension: 0.4
-      }]
-    });
+        fill: true,
+        tension: 0.4,
+      }
+    ],
   };
 
-  // Function to process exercise data
-  const processExerciseData = (logs) => {
-    // ... (kode processExerciseData Anda tidak berubah)
-    const aggregatedData = logs.reduce((acc, log) => {
-      const date = new Date(log.tanggal).toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
-      acc[date] = (acc[date] || 0) + Number(log.durasi_menit);
-      return acc;
-    }, {});
-
-    const labels = Object.keys(aggregatedData);
-    const data = Object.values(aggregatedData);
-    const total = data.reduce((sum, val) => sum + val, 0);
-    const avg = data.length > 0 ? Math.round(total / data.length) : 0;
-    
-    setExerciseStats({ avg, data });
-    setExerciseData({
-      labels: labels,
-      datasets: [{
-        label: 'Exercise Minutes (minutes)',
-        data: data,
-        borderColor: 'rgb(234, 179, 8)',
-        backgroundColor: 'rgba(234, 179, 8, 0.1)',
+  const activityDistributionChart = {
+    labels: ['Food Logs', 'Exercise Logs', 'Sleep Logs'],
+    datasets: [
+      {
+        data: [
+          chartData.activityDistribution.food,
+          chartData.activityDistribution.exercise,
+          chartData.activityDistribution.sleep
+        ],
+        backgroundColor: [
+          'rgba(59, 130, 246, 0.8)',
+          'rgba(34, 197, 94, 0.8)',
+          'rgba(168, 85, 247, 0.8)'
+        ],
+        borderColor: [
+          'rgb(59, 130, 246)',
+          'rgb(34, 197, 94)',
+          'rgb(168, 85, 247)'
+        ],
         borderWidth: 2,
-        fill: true, 
-        tension: 0.4
-      }]
-    });
+      },
+    ],
   };
 
   const chartOptions = {
-    // ... (kode chartOptions Anda tidak berubah)
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-      legend: { 
+      legend: {
         position: 'top',
-        labels: {
-          usePointStyle: true,
-          padding: 15
-        }
       },
-      title: { display: false }
+      title: {
+        display: true,
+        text: `Last ${timeRange === 'week' ? '7 Days' : timeRange === 'month' ? '30 Days' : 'Year'}`,
+      },
     },
     scales: {
       y: {
         beginAtZero: true,
-        grid: {
-          color: 'rgba(0, 0, 0, 0.05)'
-        }
       },
-      x: {
-        grid: {
-          display: false
-        }
-      }
     },
-    animation: {
-      duration: 1000,
-      easing: 'easeOutQuart'
+  };
+
+  const doughnutOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+      },
+    },
+  };
+
+  const getActivityType = (activity) => {
+    if (activity.nama_makanan) return 'food';
+    if (activity.nama_olahraga || activity.jenis_olahraga) return 'exercise';
+    if (activity.waktu_tidur || activity.kualitas_tidur) return 'sleep';
+    return 'unknown';
+  };
+
+  const getActivityDescription = (activity) => {
+    const type = getActivityType(activity);
+    switch (type) {
+      case 'food':
+        return `Ate ${activity.nama_makanan} (${activity.kalori || 0} kcal)`;
+      case 'exercise':
+        return `Did ${activity.nama_olahraga || activity.jenis_olahraga} (${activity.kalori_terbakar || 0} kcal burned)`;
+      case 'sleep':
+        return `Slept ${activity.kualitas_tidur ? `- ${activity.kualitas_tidur}` : ''}`;
+      default:
+        return 'Logged activity';
     }
   };
 
-  if (loading) {
-    // ... (kode loading Anda tidak berubah)
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard 
-         title="Total Calories" 
-        value={foodStats.total || 0} // Menggunakan total dari foodStats
-        unit="kcal" 
-        icon="🔥" 
-        color="border-l-red-400"
-        />
-
-        <StatCard 
-          title="Average Sleep" 
-          value={overallStats.averageSleepHours || 0} 
-          unit="hours" 
-          icon="😴" 
-          color="border-l-green-400"
-        />
-        <StatCard 
-          title="Total Exercise" 
-          value={overallStats.totalExerciseMinutes || 0} 
-          unit="minutes" 
-          icon="💪" 
-          color="border-l-yellow-400"
-        />
-        <StatCard 
-          title="Exercise Sessions" 
-          value={overallStats.totalExerciseSessions || 0} 
-          unit="sessions" 
-          icon="📊" 
-          color="border-l-purple-400"
-        />
-      </div>
-
-      {/* AI Assistant Placeholder */}
-      <AIPlaceholder />
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        {/* Calorie Intake Chart */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md">
-          {/* ... (kode Calorie Intake Chart Anda tidak berubah) */}
-          <h3 className="text-lg font-semibold mb-4 text-gray-800">Weekly Calorie Intake</h3>
-          {foodStats.data.length > 0 ? (
-            <>
-              <div className="h-64">
-                <Line data={foodData} options={chartOptions} />
-              </div>
-              <AnalysisReport label="Calories" average={foodStats.avg} />
-            </>
-          ) : (
-            <div className="h-64 flex items-center justify-center">
-              <p className="text-gray-400 text-center">No calorie data recorded for the past 7 days.</p>
-            </div>
-          )}
-        </div>
-        
-        {/* Sleep Duration Chart */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md">
-          {/* ... (kode Sleep Duration Chart Anda tidak berubah) */}
-          <h3 className="text-lg font-semibold mb-4 text-gray-800">Weekly Sleep Duration</h3>
-          {sleepStats.data.length > 0 ? (
-            <>
-              <div className="h-64">
-                <Line data={sleepData} options={chartOptions} />
-              </div>
-              <AnalysisReport label="Sleep" average={sleepStats.avg} />
-            </>
-          ) : (
-            <div className="h-64 flex items-center justify-center">
-              <p className="text-gray-400 text-center">No sleep data recorded for the past 7 days.</p>
-            </div>
-          )}
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Health Report</h1>
+            <p className="text-gray-600">AI-powered insights and overview of your health activities</p>
+          </div>
+          <div className="flex space-x-2">
+            {['week', 'month', 'year'].map((range) => (
+              <button
+                key={range}
+                onClick={() => setTimeRange(range)}
+                className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+                  timeRange === range 
+                    ? 'bg-blue-600 text-white shadow-md' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {range.charAt(0).toUpperCase() + range.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Exercise Activity Chart */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md md:col-span-2">
-          {/* ... (kode Exercise Activity Chart Anda tidak berubah) */}
-          <h3 className="text-lg font-semibold mb-4 text-gray-800">Weekly Exercise Activity</h3>
-          {exerciseStats.data.length > 0 ? (
-            <>
-              <div className="h-64">
-                <Line data={exerciseData} options={chartOptions} />
+        {error && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center">
+              <span className="text-yellow-600 text-sm">{error}</span>
+            </div>
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="text-lg text-gray-600">Loading AI-powered insights...</div>
+          </div>
+        ) : (
+          <>
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Total Food Logs</h3>
+                <p className="text-3xl font-bold text-blue-600">{foodLogs.length}</p>
+                <p className="text-sm text-gray-600">Meals recorded</p>
               </div>
-              <AnalysisReport label="Exercise" average={exerciseStats.avg} />
+
+              <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Total Exercise</h3>
+                <p className="text-3xl font-bold text-green-600">{exerciseLogs.length}</p>
+                <p className="text-sm text-gray-600">Workout sessions</p>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-purple-500">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Sleep Records</h3>
+                <p className="text-3xl font-bold text-purple-600">{sleepLogs.length}</p>
+                <p className="text-sm text-gray-600">Nights tracked</p>
+              </div>
+
+              <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-orange-500">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Net Calories</h3>
+                <p className="text-3xl font-bold text-orange-600">
+                  {foodLogs.reduce((sum, log) => sum + (log.kalori || 0), 0) - 
+                   exerciseLogs.reduce((sum, log) => sum + (log.kalori_terbakar || 0), 0)}
+                </p>
+                <p className="text-sm text-gray-600">Current balance</p>
+              </div>
+            </div>
+
+            {/* Charts Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Calorie Comparison Chart */}
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Calorie Intake vs Burned</h3>
+                <div className="h-80">
+                  <Bar data={calorieComparisonChart} options={chartOptions} />
+                </div>
+              </div>
+
+              {/* Sleep Trend Chart */}
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Sleep Pattern</h3>
+                <div className="h-80">
+                  <Line data={sleepTrendChart} options={chartOptions} />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+              {/* Activity Distribution */}
+              <div className="bg-white p-6 rounded-lg shadow-md">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Activity Distribution</h3>
+                <div className="h-64">
+                  <Doughnut data={activityDistributionChart} options={doughnutOptions} />
+                </div>
+              </div>
+
+              {/* Recent Activities */}
+              <div className="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Recent Activities</h3>
+                <div className="space-y-3 max-h-64 overflow-y-auto">
+                  {[...foodLogs, ...exerciseLogs, ...sleepLogs]
+                    .sort((a, b) => new Date(b.tanggal || b.createdAt) - new Date(a.tanggal || a.createdAt))
+                    .slice(0, 8)
+                    .map((activity, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center">
+                          <span className={`inline-block w-3 h-3 rounded-full mr-3 ${
+                            getActivityType(activity) === 'food' ? 'bg-blue-500' : 
+                            getActivityType(activity) === 'exercise' ? 'bg-green-500' : 'bg-purple-500'
+                          }`}></span>
+                          <span className="font-medium text-sm">
+                            {getActivityDescription(activity)}
+                          </span>
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          {new Date(activity.tanggal || activity.createdAt).toLocaleDateString('id-ID')}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+
+            {/* AI Recommendations Section */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg shadow-md border border-blue-200">
+              <div className="flex items-center mb-4">
+                <h3 className="text-xl font-semibold text-gray-800">AI-Powered Recommendations</h3>
+                <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                  Smart Analysis
+                </span>
+              </div>
+              <p className="text-gray-600 mb-4">
+                Based on your activity patterns and health data, here are personalized suggestions to help you achieve your wellness goals.
+              </p>
               
-              {/* Additional Info */}
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div className="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-100">
-                  <p className="font-semibold text-yellow-800">Total Calories Burned</p>
-                  <p className="text-xl font-bold text-yellow-900">{(overallStats.totalCaloriesBurned || 0).toLocaleString()} kcal</p>
+              {recommendations.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {recommendations.map((rec, index) => (
+                    <div key={index} className="bg-white p-4 rounded-lg border border-blue-100 shadow-sm hover:shadow-md transition-shadow">
+                      <div className="flex items-start mb-2">
+                        <span className="px-2 py-1 bg-blue-500 text-white text-xs font-medium rounded mr-2">
+                          AI
+                        </span>
+                        <h4 className="font-semibold text-blue-800">{rec.title}</h4>
+                      </div>
+                      <p className="text-gray-700 text-sm">{rec.description}</p>
+                      {rec.type && (
+                        <span className="inline-block mt-2 px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                          {rec.type}
+                        </span>
+                      )}
+                    </div>
+                  ))}
                 </div>
-                <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-100">
-                  <p className="font-semibold text-blue-800">Average per Session</p>
-                  <p className="text-xl font-bold text-blue-900">{(overallStats.averageExerciseMinutes || 0).toLocaleString()} minutes</p>
+              ) : (
+                <div className="text-center py-4 text-gray-500">
+                  No recommendations available. Continue logging your activities to get personalized AI suggestions.
                 </div>
-              </div>
-            </>
-          ) : (
-            <div className="h-64 flex items-center justify-center">
-              <p className="text-gray-400 text-center">No exercise data recorded for the past 7 days.</p>
+              )}
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

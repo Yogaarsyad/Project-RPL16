@@ -1,40 +1,53 @@
+// backend/src/models/userProfileModel.js
 const db = require('../config/db');
 
 /**
-
- * @param {number} userId ID pengguna.
-  @returns {Promise<object>} Data profil pengguna.
+ * Mengambil data gabungan dari users dan user_profiles
  */
-const getProfileByUserId = async (userId) => {
-    const result = await db.query('SELECT * FROM user_profiles WHERE user_id = $1', [userId]);
-    return result.rows[0];
-};
+async function getProfileByUserId(userId) {
+    try {
+        const query = `
+            SELECT 
+                u.id, u.nama, u.email, u.npm, u.jurusan,
+                up.phone, up.alamat, up.bio, up.avatar_url
+            FROM users u
+            LEFT JOIN user_profiles up ON u.id = up.user_id
+            WHERE u.id = $1
+        `;
+        const { rows } = await db.query(query, [userId]);
+        return rows[0] || null;
+    } catch (error) {
+        throw new Error(`Failed to get profile: ${error.message}`);
+    }
+}
 
 /**
-
- * @param {number} userId 
- * @param {object} profileData 
- * @returns {Promise<object>}
+ * Meng-update atau Meng-insert profil di tabel user_profiles
+ * Ini disebut "UPSERT"
  */
-const updateProfileByUserId = async (userId, { tinggi_cm, berat_kg, usia, jenis_kelamin, bio, avatar_url }) => {
-   
-    const result = await db.query(
-        `UPDATE user_profiles 
-         SET 
-            tinggi_cm = COALESCE($1, tinggi_cm), 
-            berat_kg = COALESCE($2, berat_kg), 
-            usia = COALESCE($3, usia), 
-            jenis_kelamin = COALESCE($4, jenis_kelamin),
-            bio = COALESCE($5, bio),
-            avatar_url = COALESCE($6, avatar_url),
-            updated_at = CURRENT_TIMESTAMP
-         WHERE user_id = $7 RETURNING *`,
-        [tinggi_cm, berat_kg, usia, jenis_kelamin, bio, avatar_url, userId]
-    );
-    return result.rows[0];
-};
+async function upsertProfileByUserId(userId, profileData) {
+    const { phone, alamat, bio, avatar_url } = profileData;
+    try {
+        const query = `
+            INSERT INTO user_profiles (user_id, phone, alamat, bio, avatar_url, updated_at)
+            VALUES ($1, $2, $3, $4, $5, NOW())
+            ON CONFLICT (user_id) 
+            DO UPDATE SET
+                phone = EXCLUDED.phone,
+                alamat = EXCLUDED.alamat,
+                bio = EXCLUDED.bio,
+                avatar_url = EXCLUDED.avatar_url,
+                updated_at = NOW()
+            RETURNING *
+        `;
+        const { rows } = await db.query(query, [userId, phone, alamat, bio, avatar_url]);
+        return rows[0];
+    } catch (error) {
+        throw new Error(`Failed to update profile: ${error.message}`);
+    }
+}
 
 module.exports = {
     getProfileByUserId,
-    updateProfileByUserId,
+    upsertProfileByUserId // <-- Nama fungsi diubah
 };

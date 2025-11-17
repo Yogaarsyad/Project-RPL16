@@ -16,6 +16,11 @@ export const register = (formData) => API.post('/users/register', formData);
 export const login = (formData) => API.post('/users/login', formData);
 export const getProfile = () => API.get('/users/profile');
 export const updateProfile = (profileData) => API.put('/users/profile', profileData);
+export const uploadAvatar = (formData) => API.post('/users/avatar', formData, {
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+});
 
 // --- Food Log ---
 export const addFoodLog = (logData) => API.post('/food-logs', logData);

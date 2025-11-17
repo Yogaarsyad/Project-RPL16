@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLog } from '../context/LogContext'; // Ganti dengan useLog
 
 function ExerciseLogForm({ onAddLog }) {
   const [activityName, setActivityName] = useState('');
@@ -6,10 +7,11 @@ function ExerciseLogForm({ onAddLog }) {
   const [caloriesBurned, setCaloriesBurned] = useState('');
   const [date, setDate] = useState('');
 
+  const { addExerciseLog } = useLog(); // Ganti dengan useLog
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Pastikan data dikonversi ke number
     const logData = {
       nama_olahraga: activityName,
       durasi_menit: parseInt(duration),
@@ -17,20 +19,21 @@ function ExerciseLogForm({ onAddLog }) {
       tanggal: date
     };
 
-    console.log('Submitting exercise log:', logData); // Debug
+    console.log('Submitting exercise log:', logData);
 
-    onAddLog(logData);
+    addExerciseLog(logData);
     setActivityName('');
     setDuration('');
     setCaloriesBurned('');
     setDate('');
   };
 
+  
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h3 className="text-lg font-semibold mb-4 text-gray-800">Add New Exercise</h3>
       <form onSubmit={handleSubmit}>
-        <div className="mb-3">
+        <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Exercise Type</label>
           <input
             type="text"
@@ -41,7 +44,7 @@ function ExerciseLogForm({ onAddLog }) {
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        <div className="mb-3">
+        <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Duration (minutes)</label>
           <input
             type="number"
@@ -52,7 +55,7 @@ function ExerciseLogForm({ onAddLog }) {
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
-        <div className="mb-3">
+        <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Calories Burned (kcal)</label>
           <input
             type="number"

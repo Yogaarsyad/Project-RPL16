@@ -1,25 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { FiMenu, FiX, FiLogOut, FiBarChart2, FiHome, FiUser } from 'react-icons/fi';
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { 
+  FiMenu, 
+  FiX, 
+  FiLogOut, 
+  FiBarChart2, 
+  FiHome, 
+  FiUser, 
+  FiActivity
+} from 'react-icons/fi';
 
 function DashboardLayout({ onLogout }) {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Detect mobile screen
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) {
-        setSidebarOpen(true);
-      } else {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      
+      if (mobile) {
         setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
       }
     };
 
     checkScreenSize();
     window.addEventListener('resize', checkScreenSize);
+    
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
@@ -32,6 +44,22 @@ function DashboardLayout({ onLogout }) {
     if (isMobile) {
       setSidebarOpen(false);
     }
+  };
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+  };
+
+  // Fungsi untuk menentukan judul halaman berdasarkan lokasi
+  const getPageTitle = () => {
+    const path = location.pathname;
+    if (path === '/dashboard') return 'Dashboard Overview';
+    if (path.includes('activity-history')) return 'Activity History';
+    if (path.includes('laporan')) return 'Reports';
+    if (path.includes('profile')) return 'User Profile';
+    return 'LifeMon Dashboard';
   };
 
   return (
@@ -53,7 +81,7 @@ function DashboardLayout({ onLogout }) {
         <div className="p-4 border-b border-gray-700 flex justify-between items-center min-w-[256px]">
           <button
             onClick={handleLifeMonClick}
-            className="font-bold text-xl whitespace-nowrap bg-transparent border-none text-white cursor-pointer hover:text-blue-300 transition-colors"
+            className="font-bold text-xl whitespace-nowrap bg-transparent border-none text-white cursor-pointer hover:text-blue-300 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
           >
             LifeMon
           </button>
@@ -64,36 +92,45 @@ function DashboardLayout({ onLogout }) {
           <Link 
             to="/dashboard" 
             onClick={handleNavClick}
-            className="flex items-center p-3 rounded-md hover:bg-gray-700 whitespace-nowrap transition-all duration-200"
+            className="flex items-center p-3 rounded-md hover:bg-gray-700 whitespace-nowrap transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <FiHome className="mr-3 flex-shrink-0 text-lg" />
             <span>Dashboard</span>
           </Link>
           
           <Link 
+            to="/dashboard/activity-history" 
+            onClick={handleNavClick}
+            className="flex items-center p-3 rounded-md hover:bg-gray-700 whitespace-nowrap transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <FiActivity className="mr-3 flex-shrink-0 text-lg" />
+            <span>Activity History</span>
+          </Link>
+          
+          <Link 
             to="/dashboard/laporan" 
             onClick={handleNavClick}
-            className="flex items-center p-3 rounded-md hover:bg-gray-700 whitespace-nowrap transition-all duration-200"
+            className="flex items-center p-3 rounded-md hover:bg-gray-700 whitespace-nowrap transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <FiBarChart2 className="mr-3 flex-shrink-0 text-lg" />
-            <span>Report</span>
+            <span>Reports</span>
           </Link>
 
           <Link 
             to="/dashboard/profile" 
             onClick={handleNavClick}
-            className="flex items-center p-3 rounded-md hover:bg-gray-700 whitespace-nowrap transition-all duration-200"
+            className="flex items-center p-3 rounded-md hover:bg-gray-700 whitespace-nowrap transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <FiUser className="mr-3 flex-shrink-0 text-lg" />
-            <span>Profil</span>
+            <span>Profile</span>
           </Link>
         </nav>
         
         {/* Logout Button */}
         <div className="p-4 border-t border-gray-700 min-w-[256px]">
           <button 
-            onClick={onLogout} 
-            className="flex items-center w-full p-3 rounded-md hover:bg-red-600 whitespace-nowrap transition-all duration-200"
+            onClick={handleLogout} 
+            className="flex items-center w-full p-3 rounded-md hover:bg-red-600 whitespace-nowrap transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500"
           >
             <FiLogOut className="mr-3 flex-shrink-0 text-lg" />
             <span>Logout</span>
@@ -106,12 +143,12 @@ function DashboardLayout({ onLogout }) {
         <header className="bg-white shadow-md p-4 flex items-center sticky top-0 z-10">
           <button 
             onClick={() => setSidebarOpen(!isSidebarOpen)} 
-            className="text-gray-600 text-2xl p-2 rounded-lg hover:bg-gray-200 transition-colors md:hidden"
+            className="text-gray-600 text-2xl p-2 rounded-lg hover:bg-gray-200 transition-colors md:hidden focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {isSidebarOpen ? <FiX /> : <FiMenu />}
           </button>
           <h2 className="ml-2 text-lg md:text-xl font-semibold text-gray-700 truncate">
-            LifeMon Dashboard
+            {getPageTitle()}
           </h2>
         </header>
 
@@ -123,4 +160,4 @@ function DashboardLayout({ onLogout }) {
   );
 }
 
-export default DashboardLayout;
+export default DashboardLayout; // <-- INI YANG BENAR
