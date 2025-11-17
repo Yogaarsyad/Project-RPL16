@@ -1,38 +1,43 @@
-const sleepLogModel = require('../models/sleepLogModel');
+const SleepLog = require('../models/SleepLog');
 
-// Controller untuk menambahkan dan mendapatkan log tidur.
-exports.addSleepLog = async (req, res) => {
-  const { tanggal, waktu_tidur, waktu_bangun, kualitas_tidur } = req.body;
-  const userId = req.user.id;
+exports.getSleepLogs = async (req, res) => {
   try {
-    const log = await sleepLogModel.createSleepLog(userId, tanggal, waktu_tidur, waktu_bangun, kualitas_tidur);
-    res.status(201).json(log);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to add sleep log' });
+    const sleepLogs = await SleepLog.find({ user: req.user.id });
+    res.json(sleepLogs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-exports.getSleepLogs = async (req, res) => {
-  const userId = req.user.id;
+exports.createSleepLog = async (req, res) => {
+  const { tanggal, waktu_tidur, waktu_bangun, kualitas_tidur } = req.body;
   try {
-    const logs = await sleepLogModel.getSleepLogsByUserId(userId);
-    res.json(logs);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch sleep logs' });
+    const sleepLog = new SleepLog({
+      user: req.user.id,
+      tanggal,
+      waktu_tidur,
+      waktu_bangun,
+      kualitas_tidur
+    });
+    await sleepLog.save();
+    res.status(201).json(sleepLog);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 };
 
 exports.deleteSleepLog = async (req, res) => {
   try {
-    const logId = parseInt(req.params.id);
-    const userId = req.user.id;
-    const deletedLog = await sleepLogModel.deleteSleepLogById(logId, userId);
-    
-    if (!deletedLog) {
-      return res.status(404).json({ message: 'Log tidak ditemukan atau Anda tidak berhak menghapusnya' });
+    const sleepLog = await SleepLog.findById(req.params.id);
+    if (!sleepLog) {
+      return res.status(404).json({ message: 'Sleep log not found' });
     }
-    res.json({ message: 'Log berhasil dihapus' });
+    if (sleepLog.user.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+    await SleepLog.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Sleep log removed' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
