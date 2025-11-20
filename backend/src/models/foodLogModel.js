@@ -1,4 +1,3 @@
-// backend/src/models/foodLogModel.js
 const db = require('../config/db');
 
 const createFoodLog = async (userId, nama_makanan, kalori, tanggal) => {

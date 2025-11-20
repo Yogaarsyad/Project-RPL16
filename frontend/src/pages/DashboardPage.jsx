@@ -219,6 +219,8 @@ function DashboardPage() {
             </div>
           </div>
 
+
+
           {/* Column 2: Log Lists */}
           <div className="lg:col-span-2 bg-white p-4 md:p-6 rounded-xl md:rounded-2xl shadow-lg border-t-4 border-blue-400">
             {/* Food History */}

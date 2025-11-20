@@ -251,7 +251,7 @@ function ReportPage() {
       },
     ],
   };
-
+  // Professional chart options
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
